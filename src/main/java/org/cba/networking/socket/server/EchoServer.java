@@ -24,7 +24,7 @@ public class EchoServer {
             Socket client = ss.accept();
             String name = "User" + i++;
             System.out.println("Client "+name+" connected");
-            Thread thread = new Thread(new ClientHandler(client, name));
+            Thread thread = new Thread(new EchoClientHandler(client, name));
             thread.start();
         }
     }
