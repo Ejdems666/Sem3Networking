@@ -20,11 +20,15 @@ public class EchoServer {
         ss = new ServerSocket(port);
         System.out.println("Waiting for clients");
         int i = 0;
+        Responder responder = new Responder();
         while (true) {
             Socket client = ss.accept();
             String name = "User" + i++;
             System.out.println("Client "+name+" connected");
-            Thread thread = new Thread(new EchoClientHandler(client, name));
+            EchoClientHandler clientHandler = new EchoClientHandler(client, name);
+            responder.addEchoClientHandler(clientHandler);
+            clientHandler.setResponder(responder);
+            Thread thread = new Thread(clientHandler);
             thread.start();
         }
     }

@@ -12,29 +12,39 @@ import java.util.Scanner;
  */
 public class EchoClientHandler implements Runnable {
     private final Socket client;
+    private final PrintWriter output;
     private final String name;
+    private Responder responder;
     private static HashMap<String, String> dictionary = new HashMap<>();
     static {
         dictionary.put("hund","dog");
     }
 
-    public EchoClientHandler(Socket client, String name) {
+    public EchoClientHandler(Socket client, String name) throws IOException {
         this.client = client;
         this.name = name;
+        output = new PrintWriter(client.getOutputStream(), true);
+    }
+
+    public void setResponder(Responder responder) {
+        this.responder = responder;
+    }
+
+    public PrintWriter getOutput() {
+        return output;
     }
 
     @Override
     public void run() {
         try {
             Scanner input = new Scanner(client.getInputStream());
-            PrintWriter output = new PrintWriter(client.getOutputStream(), true);
             String message = input.nextLine();
             while (!message.equals("exit")) {
                 message = processMessage(message);
-                output.println(name + ": " + message);
+                responder.respondToClients(name + ": " + message);
                 message = input.nextLine();
             }
-            output.println("Client "+name+" disconnected");
+            responder.respondToClients("Client "+name+" disconnected");
             client.close();
         } catch (IOException e) {
             e.printStackTrace();
