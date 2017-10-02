@@ -10,7 +10,7 @@ import java.util.Scanner;
 /**
  * Created by adam on 27/09/2017.
  */
-public class EchoClientHandler implements Runnable {
+public class ClientHandler implements Runnable {
     private final Socket client;
     private final PrintWriter output;
     private final String name;
@@ -20,7 +20,7 @@ public class EchoClientHandler implements Runnable {
         dictionary.put("hund","dog");
     }
 
-    public EchoClientHandler(Socket client, String name) throws IOException {
+    public ClientHandler(Socket client, String name) throws IOException {
         this.client = client;
         this.name = name;
         output = new PrintWriter(client.getOutputStream(), true);
@@ -41,15 +41,15 @@ public class EchoClientHandler implements Runnable {
             String message = input.nextLine();
             while (!message.equals("exit")) {
                 message = processMessage(message);
-                responder.respondToClients(name + ": " + message);
+                responder.respondToClients(this,name + ": " + message);
                 message = input.nextLine();
             }
-            responder.respondToClients("Client "+name+" disconnected");
+            responder.respondToClients(this,"Client "+name+" disconnected");
             client.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NoSuchElementException e) {
-            System.out.println("Client "+name+" disconnected");
+            responder.respondToClients(this,"Client "+name+" disconnected");
         }
         Thread.currentThread().interrupt();
     }

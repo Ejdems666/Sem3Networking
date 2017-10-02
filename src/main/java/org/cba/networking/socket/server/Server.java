@@ -7,7 +7,7 @@ import java.net.Socket;
 /**
  * Created by adam on 27/09/2017.
  */
-public class EchoServer {
+public class Server {
     private static int port = 1234;
     private static String ip = "localhost";
     private static ServerSocket ss;
@@ -22,10 +22,10 @@ public class EchoServer {
         int i = 0;
         Responder responder = new Responder();
         while (true) {
-            Socket client = ss.accept();
+            Socket clientSocket = ss.accept();
             String name = "User" + i++;
             System.out.println("Client "+name+" connected");
-            EchoClientHandler clientHandler = new EchoClientHandler(client, name);
+            ClientHandler clientHandler = new ClientHandler(clientSocket, name);
             responder.addEchoClientHandler(clientHandler);
             clientHandler.setResponder(responder);
             Thread thread = new Thread(clientHandler);

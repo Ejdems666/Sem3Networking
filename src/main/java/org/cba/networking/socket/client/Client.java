@@ -1,40 +1,21 @@
 package org.cba.networking.socket.client;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by adam on 27/09/2017.
  */
 public class Client {
     public static void main(String[] args) throws IOException {
-        final Socket server = new Socket("localhost", 1234);
-        Thread consoleInputThread = new Thread(() -> {
-            try {
-                PrintWriter serverOutput = new PrintWriter(server.getOutputStream(), true);
-                Scanner consoleInput = new Scanner(System.in);
-                while (server.isConnected()) {
-                    String message = consoleInput.nextLine();
-                    serverOutput.println(message);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        Thread serverInputThread = new Thread(() -> {
-            try {
-                Scanner serverInput = new Scanner(server.getInputStream());
-                while (server.isConnected()) {
-                    System.out.println(serverInput.nextLine());
-                }
-                System.out.println("done");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        consoleInputThread.start();
-        serverInputThread.start();
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        final Socket serverSocket = new Socket("207.154.217.117", 1234);
+        executor.submit(new ConsoleInputRunnable(serverSocket));
+        executor.submit(new ServerInputRunnable(serverSocket));
+        executor.shutdown();
     }
+
+
 }
