@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 public class Client {
     public static void main(String[] args) throws IOException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        final Socket serverSocket = new Socket("207.154.217.117", 1234);
+        final Socket serverSocket = new Socket("localhost", 1234);
         executor.submit(new ConsoleInputRunnable(serverSocket));
         executor.submit(new ServerInputRunnable(serverSocket));
         executor.shutdown();
